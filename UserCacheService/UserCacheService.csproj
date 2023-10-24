@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UserCacheService.Application\UserCacheService.Application.csproj" />
+      <ProjectReference Include="..\UserCacheService.Domain\UserCacheService.Domain.csproj" />
+      <ProjectReference Include="..\UserCacheService.Infrastructure\UserCacheService.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
