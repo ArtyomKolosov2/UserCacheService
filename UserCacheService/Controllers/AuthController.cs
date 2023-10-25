@@ -12,4 +12,11 @@ public class AuthController : ControllerBase
     {
         
     }
+    
+    [HttpGet]
+    [Route("[action]")]
+    public IActionResult Test()
+    {
+        return Ok(new { message = "ok" });
+    }
 }

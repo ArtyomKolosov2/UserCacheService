@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  usercacheservice:
+    container_name: usercacheservice
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings__UserCacheServiceDatabaseContext=server=usercacheservicedb;port=3306;uid=${User};pwd=${Password};database=${DatabaseName}"
+    restart: always
+    depends_on: 
+      - usercacheservicedb
+    ports:
+      - "5000:80"
+  
+  usercacheservicedb:
+    container_name: usercacheservicedb
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: ${DatabaseName}
+      MYSQL_USER: ${User}
+      MYSQL_PASSWORD: ${Password}
+    ports:
+      - "3306:3306"
+      

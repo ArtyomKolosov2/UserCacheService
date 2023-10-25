@@ -6,7 +6,13 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
-    
+
+    <ItemGroup>
+      <ProjectReference Include="..\UserCacheService.Application\UserCacheService.Application.csproj" />
+      <ProjectReference Include="..\UserCacheService.Domain\UserCacheService.Domain.csproj" />
+      <ProjectReference Include="..\UserCacheService.Infrastructure\UserCacheService.Infrastructure.csproj" />
+    </ItemGroup>
+
     <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
@@ -14,9 +20,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\UserCacheService.Application\UserCacheService.Application.csproj" />
-      <ProjectReference Include="..\UserCacheService.Domain\UserCacheService.Domain.csproj" />
-      <ProjectReference Include="..\UserCacheService.Infrastructure\UserCacheService.Infrastructure.csproj" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.24">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Views\" />
     </ItemGroup>
 
 </Project>
