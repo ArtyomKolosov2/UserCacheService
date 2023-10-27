@@ -21,8 +21,4 @@
       <ProjectReference Include="..\..\UserCacheService\UserCacheService.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Pages\Public\" />
-    </ItemGroup>
-
 </Project>

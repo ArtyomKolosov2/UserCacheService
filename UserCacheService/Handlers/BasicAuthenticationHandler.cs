@@ -47,7 +47,6 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             var claimsPrincipal = new ClaimsPrincipal(identity);
         
             return await Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
-
         }
         catch
         {

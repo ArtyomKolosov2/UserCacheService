@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UserCacheService.Application.Dtos;
+using UserCacheService.Dtos;
 
 namespace UserCacheService.Controllers;
 

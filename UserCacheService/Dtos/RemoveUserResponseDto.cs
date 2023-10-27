@@ -1,4 +1,4 @@
-﻿namespace UserCacheService.Application.Dtos;
+﻿namespace UserCacheService.Dtos;
 
 public class RemoveUserResponseDto
 {

@@ -1,6 +1,4 @@
-﻿using UserCacheService.Domain.UserInfo;
-
-namespace UserCacheService.Application.Dtos;
+﻿namespace UserCacheService.Dtos;
 
 public class UserInfoDto
 {
