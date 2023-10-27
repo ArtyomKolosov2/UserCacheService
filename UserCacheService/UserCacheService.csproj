@@ -20,14 +20,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Mapster" Version="7.4.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.24">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Views\" />
     </ItemGroup>
 
 </Project>

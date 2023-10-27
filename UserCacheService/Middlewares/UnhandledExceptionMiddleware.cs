@@ -1,4 +1,4 @@
-﻿namespace UserCacheService.Middleware;
+﻿namespace UserCacheService.Middlewares;
 
 public class UnhandledExceptionMiddleware
 {

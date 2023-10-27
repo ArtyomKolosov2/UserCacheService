@@ -1,22 +1,25 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UserCacheService.Application.Dtos;
 
 namespace UserCacheService.Controllers;
 
 [AllowAnonymous]
-[ApiController]
 [Route("[controller]")]
-public class PublicController : ControllerBase
+public class PublicController : Controller
 {
     public PublicController()
     {
         
     }
-
-    [HttpGet]
+    
     [Route("[action]")]
-    public IActionResult Test()
+    public IActionResult GetUserInfo([FromQuery] int id)
     {
-        return Ok(new { message = "ok" });
+        return View(new UserInfoDto
+        {
+            Name = "Test",
+            Status = "Test"
+        });
     }
 }

@@ -14,7 +14,7 @@ public class UserInfoRepository : IUserInfoRepository
         _context = context;
     }
     
-    public Task<bool> Any(int id, CancellationToken cancellationToken) => _context.UserInfos.AnyAsync(x => x.Id == id, cancellationToken);
+    public Task<bool> Contains(int id, CancellationToken cancellationToken) => _context.UserInfos.AnyAsync(x => x.Id == id, cancellationToken);
 
     public async Task<UserInfo> Create(UserInfo userInfo, CancellationToken cancellationToken)
     {

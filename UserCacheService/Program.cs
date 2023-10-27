@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using UserCacheService.Application;
@@ -6,13 +7,23 @@ using UserCacheService.Infrastructure;
 using UserCacheService.Infrastructure.Authentication;
 using UserCacheService.Infrastructure.Database;
 using UserCacheService.Infrastructure.Database.Context;
-using UserCacheService.Middleware;
+using UserCacheService.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
+builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
+    .AddXmlDataContractSerializerFormatters()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.AllowTrailingCommas = true;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddEndpointsApiExplorer();
@@ -26,6 +37,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -43,7 +55,7 @@ async Task PrepareDatabase(IHost webApplication)
 {
     await using var scope = webApplication.Services.CreateAsyncScope();
     var databaseContext = scope.ServiceProvider.GetRequiredService<UserCacheServiceDatabaseContext>();
-    if (databaseContext.Database.GetPendingMigrations().Any())
+    if (databaseContext.Database.IsRelational() && databaseContext.Database.GetPendingMigrations().Any())
         await databaseContext.Database.MigrateAsync();
     await DatabaseDataSeeder.SeedDatabaseWithDataIfEmpty(databaseContext);
 }

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Tests.EnvironmentBuilder</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Flurl.Http" Version="3.2.4" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.24" />
+      <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.24" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.24" />
+      <PackageReference Include="xunit" Version="2.5.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\UserCacheService.Application\UserCacheService.Application.csproj" />
+      <ProjectReference Include="..\..\UserCacheService.Infrastructure\UserCacheService.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\UserCacheService\UserCacheService.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\Public\" />
+    </ItemGroup>
+
+</Project>

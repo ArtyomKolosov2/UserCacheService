@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCacheService.Tests", "T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCacheService.Console", "UserCacheService.Console\UserCacheService.Console.csproj", "{4DF7AAC1-E410-4A83-8000-CF93F50F2417}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.EnviromentBuilder", "Tests\Tests.EnviromentBuilder\Tests.EnviromentBuilder.csproj", "{692495FF-4284-4E5F-96D4-6EFE186AC453}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.EnvironmentBuilder", "Tests\Tests.EnvironmentBuilder\Tests.EnvironmentBuilder.csproj", "{692495FF-4284-4E5F-96D4-6EFE186AC453}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

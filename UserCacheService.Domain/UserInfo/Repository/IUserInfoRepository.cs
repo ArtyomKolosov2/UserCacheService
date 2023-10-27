@@ -2,7 +2,7 @@
 
 public interface IUserInfoRepository
 {
-    Task<bool> Any(int id, CancellationToken cancellationToken);
+    Task<bool> Contains(int id, CancellationToken cancellationToken);
     
     Task<UserInfo> Create(UserInfo userInfo, CancellationToken cancellationToken);
     
