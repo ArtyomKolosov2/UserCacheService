@@ -11,4 +11,6 @@ public interface IUserInfoRepository
     Task<UserInfo> Update(UserInfo userInfo, CancellationToken cancellationToken);
     
     Task<UserInfo?> DeleteById(int id, CancellationToken cancellationToken);
+
+    Task<IEnumerable<UserInfo>> GetAll(CancellationToken cancellationToken);
 }

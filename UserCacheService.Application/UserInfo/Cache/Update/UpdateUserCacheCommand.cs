@@ -1,6 +1,7 @@
-﻿namespace UserCacheService.Application.UserInfo.Cache.Update;
+﻿using MediatR;
 
-public class UpdateUserCacheCommand
+namespace UserCacheService.Application.UserInfo.Cache.Update;
+
+public class UpdateUserCacheCommand : IRequest
 {
-    
 }

@@ -1,14 +1,18 @@
-﻿namespace UserCacheService.Middlewares;
+﻿using System.Net;
+using System.Xml.Serialization;
+using UserCacheService.Domain.Error;
+using UserCacheService.Domain.Exceptions;
+using UserCacheService.Dtos;
+
+namespace UserCacheService.Middlewares;
 
 public class UnhandledExceptionMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<UnhandledExceptionMiddleware> _logger;
 
-    public UnhandledExceptionMiddleware(RequestDelegate next, ILogger<UnhandledExceptionMiddleware> logger)
+    public UnhandledExceptionMiddleware(RequestDelegate next)
     {
         _next = next;
-        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -19,9 +23,52 @@ public class UnhandledExceptionMiddleware
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Unhandled exception.");
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            // ToDo: Add error mapping from the task
+            await UnhandledExceptionToErrorResponseDto(context, exception);
         }
     }
+
+    private static Task UnhandledExceptionToErrorResponseDto(HttpContext context, Exception exception)
+    {
+        context.Response.ContentType = context.Request.ContentType!;
+        context.Response.StatusCode = MapExceptionTypeToHttpResponseCode(exception);
+        
+        var errorDto = BuildErrorResponseDto(exception);
+
+        return WriteErrorResponseDtoToResponse(context, errorDto);
+    }
+
+    private static async Task WriteErrorResponseDtoToResponse(HttpContext httpContext, ErrorResponseDto errorResponseDto)
+    {
+        if (httpContext.Response.ContentType is "application/xml")
+        {
+            await using var writer = new StringWriter();
+            new XmlSerializer(errorResponseDto.GetType()).Serialize(writer, errorResponseDto);
+            var result = writer.ToString();
+            httpContext.Response.ContentLength = result.Length;
+            await httpContext.Response.WriteAsync(result);
+        }
+        else
+            await httpContext.Response.WriteAsJsonAsync(errorResponseDto);
+    }
+
+    private static ErrorResponseDto BuildErrorResponseDto(Exception exception) =>
+        new()
+        {
+            ErrorId = GetErrorIdFromExceptionType(exception),
+            ErrorMessage = exception.Message
+        };
+
+    private static int MapExceptionTypeToHttpResponseCode(Exception exception) => (int)(exception switch
+    {
+        UserInfoAlreadyExistsException => HttpStatusCode.Conflict,
+        UserInfoNotFoundException => HttpStatusCode.NotFound,
+        ServiceBaseException => HttpStatusCode.UnprocessableEntity,
+        var _ => HttpStatusCode.InternalServerError,
+    });
+
+    private static int GetErrorIdFromExceptionType(Exception exception) => exception switch
+    {
+        ServiceBaseException baseException => baseException.ErrorId,
+        var _ => (int)ErrorCode.InternalError,
+    };
 }

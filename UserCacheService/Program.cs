@@ -20,8 +20,6 @@ builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttri
     {
         options.JsonSerializerOptions.AllowTrailingCommas = true;
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-        
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 builder.Services.AddInfrastructureServices(builder.Configuration);

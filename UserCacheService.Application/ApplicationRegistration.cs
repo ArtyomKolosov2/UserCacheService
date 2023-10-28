@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using UserCacheService.Application.UserInfo.Cache;
 using UserCacheService.Application.UserInfo.Cache.Update;
 using UserCacheService.Application.UserInfo.Create;
@@ -15,10 +16,8 @@ public static class ApplicationRegistration
         services.AddSingleton<IUserInfoCache, UserInfoCache>();
         services.AddMediatR(x =>
         {
+            x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             x.Lifetime = ServiceLifetime.Scoped;
-            x.AddBehavior<SetUserStatusCommand>();
-            x.AddBehavior<RemoveUserCommand>();
-            x.AddBehavior<CreateUserCommand>();
         });
 
         return services;

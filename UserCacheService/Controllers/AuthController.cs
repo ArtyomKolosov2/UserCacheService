@@ -1,5 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Mapster;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UserCacheService.Application.UserInfo.Create;
+using UserCacheService.Application.UserInfo.Remove;
+using UserCacheService.Application.UserInfo.Set;
+using UserCacheService.Domain.UserInfo;
 using UserCacheService.Dtos;
 
 namespace UserCacheService.Controllers;
@@ -9,32 +15,40 @@ namespace UserCacheService.Controllers;
 [Route("[controller]/[action]")]
 public class AuthController : ControllerBase
 {
-    public AuthController()
+    private readonly IMediator _mediator;
+
+    public AuthController(IMediator mediator)
     {
-        
+        _mediator = mediator;
     }
     
     [HttpPost]
     [Consumes("application/xml")]
     [Produces("application/xml")]
-    public Task<ActionResult<CreateUserResponseDto>> CreateUser([FromBody] CreateUserRequestDto createUserRequestDto)
+    public async Task<ActionResult<CreateUserResponseDto>> CreateUser([FromBody] CreateUserRequestDto createUserRequestDto, CancellationToken cancellationToken)
     {
-        return new Task<ActionResult<CreateUserResponseDto>>(null);
+        return Ok(await _mediator.Send(new CreateUserCommand(createUserRequestDto.User.Adapt<UserInfo>()), cancellationToken));
     }
 
     [HttpPost]
     [Consumes("application/x-www-form-urlencoded")]
     [Produces("application/json")]
-    public Task<ActionResult<UserInfoDto>> SetStatus([FromForm] int id, [FromForm] string newStatus)
+    public async Task<ActionResult<UserInfoDto>> SetStatus([FromForm] int id, [FromForm] string newStatus, CancellationToken cancellationToken)
     {
-        return new Task<ActionResult<UserInfoDto>>(null);
+        return Ok(await _mediator.Send(new SetUserStatusCommand(id, newStatus), cancellationToken));
     }
 
     [HttpPost]
     [Consumes("application/json")]
     [Produces("application/json")]
-    public Task<ActionResult<RemoveUserResponseDto>> RemoveUser([FromBody] RemoveUserRequestDto removeUserRequestDto)
+    public async Task<ActionResult<RemoveUserResponseDto>> RemoveUser([FromBody] RemoveUserRequestDto removeUserRequestDto, CancellationToken cancellationToken)
     {
-        return new Task<ActionResult<RemoveUserResponseDto>>(null);
+        var userInfo = await _mediator.Send(new RemoveUserCommand(removeUserRequestDto.RemoveUser.Id), cancellationToken);
+        return Ok(new RemoveUserResponseDto
+        {
+            User = userInfo.Adapt<UserInfoDto>(),
+            Success = true,
+            Message = "User was removed"
+        });
     }
 }

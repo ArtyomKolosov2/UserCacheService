@@ -24,11 +24,9 @@ public class UserInfoRepository : IUserInfoRepository
         return userInfo;
     }
     
-    public async Task<UserInfo?> GetById(int id, CancellationToken cancellationToken)
-    {
-        return await _context.UserInfos.FindAsync(new object[] { id }, cancellationToken);
-    }
-    
+    public async Task<UserInfo?> GetById(int id, CancellationToken cancellationToken) 
+        => await _context.UserInfos.FindAsync(new object[] { id }, cancellationToken);
+
     public async Task<UserInfo> Update(UserInfo userInfo, CancellationToken cancellationToken)
     {
         _context.Entry(userInfo).State = EntityState.Modified;
@@ -40,9 +38,16 @@ public class UserInfoRepository : IUserInfoRepository
     public async Task<UserInfo?> DeleteById(int id, CancellationToken cancellationToken)
     {
         var userInfo = await _context.UserInfos.FindAsync(new object[] { id }, cancellationToken);
+
+        if (userInfo is null)
+            return null;
+        
         _context.UserInfos.Remove(userInfo);
         await _context.SaveChangesAsync(cancellationToken);
 
         return userInfo;
     }
+
+    public async Task<IEnumerable<UserInfo>> GetAll(CancellationToken cancellationToken) 
+        => await _context.UserInfos.ToListAsync(cancellationToken);
 }

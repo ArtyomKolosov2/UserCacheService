@@ -1,8 +1,8 @@
 ﻿namespace UserCacheService.Dtos;
 
-public class RemoveUserResponseDto
+public class RemoveUserResponseDto : BaseResponseDto
 {
-    public bool Success { get; set; }
+    public int? ErrorId { get; set; } = null;
     
     public string Message { get; set; }
     

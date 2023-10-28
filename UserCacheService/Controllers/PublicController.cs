@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Mapster;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UserCacheService.Application.UserInfo.Get;
 using UserCacheService.Dtos;
 
 namespace UserCacheService.Controllers;
@@ -8,18 +11,17 @@ namespace UserCacheService.Controllers;
 [Route("[controller]")]
 public class PublicController : Controller
 {
-    public PublicController()
+    private readonly IMediator _mediator;
+
+    public PublicController(IMediator mediator)
     {
-        
+        _mediator = mediator;
     }
     
-    [Route("[action]")]
-    public IActionResult GetUserInfo([FromQuery] int id)
+    [Route("UserInfo")]
+    public async Task<IActionResult> GetUserInfo([FromQuery] int id)
     {
-        return View(new UserInfoDto
-        {
-            Name = "Test",
-            Status = "Test"
-        });
+        var userInfo = await _mediator.Send(new GetUserCommand(id));
+        return View(userInfo.Adapt<UserInfoDto>());
     }
 }

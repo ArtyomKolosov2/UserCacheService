@@ -11,6 +11,7 @@ public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup> 
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("Test");
         builder.ConfigureServices(services =>
         {
             builder.ConfigureAppConfiguration(configurationBuilder =>

@@ -1,9 +1,7 @@
 ﻿namespace UserCacheService.Dtos;
 
-public class CreateUserResponseDto
+public class CreateUserResponseDto : BaseResponseDto
 {
-    public bool Success { get; set; } = true;
-
     public int ErrorId { get; set; } = 0;
     
     public UserInfoDto User { get; set; }
