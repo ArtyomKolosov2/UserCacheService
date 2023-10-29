@@ -23,7 +23,10 @@ public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup> 
             var databaseDescriptor = services.Single(d => d.ServiceType == typeof(DbContextOptions<UserCacheServiceDatabaseContext>));
             services.Remove(databaseDescriptor);
 
-            services.AddDbContext<UserCacheServiceDatabaseContext>(options => { options.UseInMemoryDatabase(nameof(UserCacheServiceDatabaseContext)); });
+            services.AddDbContext<UserCacheServiceDatabaseContext>(options =>
+            {
+                options.UseInMemoryDatabase(nameof(UserCacheServiceDatabaseContext));
+            });
             
             var serviceProvider = services.BuildServiceProvider();
 

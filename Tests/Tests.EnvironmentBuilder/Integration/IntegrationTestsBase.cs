@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using UserCacheService.Domain.UserInfo;
 using UserCacheService.Infrastructure.Authentication;
 using Xunit;
@@ -24,16 +25,17 @@ public class IntegrationTestsBase : IClassFixture<IntegrationTestFixture>
         return credentialsFromConfig;
     }
 
-    protected UserInfo InsertUserInfoToDb(int id, string name, UserInfoStatus status)
+    protected async Task<UserInfo> InsertUserInfoToDb(int id, string name, UserInfoStatus status)
     {
         var userInfo = new UserInfo(name)
         {
             Id = id,
+            Name = name,
             Status = status
         };
-
-        Fixture.DatabaseContext.UserInfos.Add(userInfo);
-        Fixture.DatabaseContext.SaveChanges();
+        
+        Fixture.DatabaseContext.Add(userInfo);
+        await Fixture.DatabaseContext.SaveChangesAsync();
 
         return userInfo;
     }

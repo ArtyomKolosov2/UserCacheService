@@ -7,7 +7,6 @@ using UserCacheService.Dtos;
 
 namespace UserCacheService.Controllers;
 
-[AllowAnonymous]
 [Route("[controller]")]
 public class PublicController : Controller
 {
@@ -19,6 +18,7 @@ public class PublicController : Controller
     }
     
     [Route("UserInfo")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetUserInfo([FromQuery] int id)
     {
         var userInfo = await _mediator.Send(new GetUserCommand(id));

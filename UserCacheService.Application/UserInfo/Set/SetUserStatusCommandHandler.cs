@@ -20,9 +20,18 @@ public class SetUserStatusCommandHandler : IRequestHandler<SetUserStatusCommand,
         if (userInfo is null)
             throw new UserInfoNotFoundException(request.Id);
 
-        userInfo.Status = Enum.Parse<UserInfoStatus>(request.Status);
+        userInfo.Status = TryParseNewStatusOrThrow(request.Status);
         var updatedUserInfo = await _userInfoRepository.Update(userInfo, cancellationToken);
         
         return updatedUserInfo;
     }
+
+    private static UserInfoStatus TryParseNewStatusOrThrow(string newStatus) => newStatus switch
+    {
+        nameof(UserInfoStatus.New) => UserInfoStatus.New,
+        nameof(UserInfoStatus.Active) => UserInfoStatus.Active,
+        nameof(UserInfoStatus.Deleted) => UserInfoStatus.Deleted,
+        nameof(UserInfoStatus.Blocked) => UserInfoStatus.Blocked,
+        var _ => throw new InvalidUserInfoStatusException(newStatus),
+    };
 }

@@ -1,11 +1,14 @@
-﻿using Flurl.Http;
+﻿using System.Text.Json;
+using Flurl.Http;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UserCacheService.Infrastructure.Database.Context;
+using Xunit;
 
 namespace Tests.EnvironmentBuilder.Integration;
 
-public class IntegrationTestFixture : IDisposable, IAsyncDisposable
+public class IntegrationTestFixture : IDisposable, IAsyncDisposable, IAsyncLifetime
 {
     private readonly TestApplicationFactory<Program> _webApplicationFactory;
     private readonly HttpClient _httpClient;
@@ -21,11 +24,28 @@ public class IntegrationTestFixture : IDisposable, IAsyncDisposable
 
         _scope = _webApplicationFactory.Services.CreateScope();
         DatabaseContext = GetService<UserCacheServiceDatabaseContext>();
-        FlurlHttp.Configure(settings => { settings.FlurlClientFactory = new TestClientFactory(_httpClient); });
+        FlurlHttp.Configure(settings =>
+        {
+            settings.JsonSerializer = new SystemJsonSerializer(new JsonSerializerOptions
+            {
+                IncludeFields = true,
+                AllowTrailingCommas = true,
+                PropertyNameCaseInsensitive = true,
+            });
+            settings.FlurlClientFactory = new TestClientFactory(_httpClient);
+        });
     }
 
     public TService GetService<TService>() where TService : notnull =>
         _scope.ServiceProvider.GetRequiredService<TService>();
+
+    public Task InitializeAsync() => DatabaseContext.Database.EnsureCreatedAsync();
+
+    Task IAsyncLifetime.DisposeAsync()
+    {
+        DatabaseContext.ChangeTracker.Clear();
+        return DatabaseContext.Database.EnsureDeletedAsync();
+    }
 
     public async ValueTask DisposeAsync()
     {

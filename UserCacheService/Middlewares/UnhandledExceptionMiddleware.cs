@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 using UserCacheService.Domain.Error;
 using UserCacheService.Domain.Exceptions;
@@ -41,9 +43,16 @@ public class UnhandledExceptionMiddleware
     {
         if (httpContext.Response.ContentType is "application/xml")
         {
-            await using var writer = new StringWriter();
-            new XmlSerializer(errorResponseDto.GetType()).Serialize(writer, errorResponseDto);
-            var result = writer.ToString();
+            await using var stream = new MemoryStream();
+            await using var writer = new XmlTextWriter(stream, Encoding.UTF8);
+            var serializer = new XmlSerializer(errorResponseDto.GetType());
+            serializer.Serialize(writer, errorResponseDto);
+
+            stream.Position = 0;
+            
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+
+            var result = await reader.ReadToEndAsync();
             httpContext.Response.ContentLength = result.Length;
             await httpContext.Response.WriteAsync(result);
         }

@@ -2,6 +2,11 @@
 
 public class UserInfo
 {
+    public UserInfo()
+    {
+        
+    }
+    
     public UserInfo(string name)
     {
         Name = name;

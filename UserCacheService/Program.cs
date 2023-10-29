@@ -1,7 +1,12 @@
+using System.Text;
 using System.Text.Json.Serialization;
+using System.Xml;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using UserCacheService.Application;
+using UserCacheService.Application.UserInfo.Cache.Background;
 using UserCacheService.Handlers;
 using UserCacheService.Infrastructure;
 using UserCacheService.Infrastructure.Authentication;
@@ -14,17 +19,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
-    .AddXmlDataContractSerializerFormatters()
+builder.Services.AddControllers(options =>
+    {
+        options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+    })
+    .AddXmlSerializerFormatters()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.AllowTrailingCommas = true;
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHostedService<UserInfoCacheBackgroundUpdateService>();
 
 builder.Services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(BasicAuthenticationDefaults.AuthenticationScheme, null);

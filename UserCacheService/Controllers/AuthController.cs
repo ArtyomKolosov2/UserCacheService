@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using System.Xml.Serialization;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,12 @@ public class AuthController : ControllerBase
     [Produces("application/xml")]
     public async Task<ActionResult<CreateUserResponseDto>> CreateUser([FromBody] CreateUserRequestDto createUserRequestDto, CancellationToken cancellationToken)
     {
-        return Ok(await _mediator.Send(new CreateUserCommand(createUserRequestDto.User.Adapt<UserInfo>()), cancellationToken));
+        var userInfoCreationResult = await _mediator.Send(new CreateUserCommand(createUserRequestDto.User.Adapt<UserInfo>()), cancellationToken);
+        return Ok(new CreateUserResponseDto
+        {
+            Success = true,
+            User = userInfoCreationResult.Adapt<UserInfoDto>()
+        });
     }
 
     [HttpPost]
@@ -35,7 +41,8 @@ public class AuthController : ControllerBase
     [Produces("application/json")]
     public async Task<ActionResult<UserInfoDto>> SetStatus([FromForm] int id, [FromForm] string newStatus, CancellationToken cancellationToken)
     {
-        return Ok(await _mediator.Send(new SetUserStatusCommand(id, newStatus), cancellationToken));
+        var userInfo = await _mediator.Send(new SetUserStatusCommand(id, newStatus), cancellationToken);
+        return Ok(userInfo.Adapt<UserInfoDto>());
     }
 
     [HttpPost]
