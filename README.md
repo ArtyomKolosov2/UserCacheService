@@ -49,7 +49,7 @@ Console
 - Write docker commands
   - `docker image build -t consoleapplication .`
   - `docker container run -it --network docker_default consoleapplication`
-- Change default url to `http:\\usercacheservice:80`
+- Start application and change default url to `http:\\usercacheservice:80`
 
 ### Option 2
 **You must have a .NET 6 runtime installed on your machine as well as MySQL**
