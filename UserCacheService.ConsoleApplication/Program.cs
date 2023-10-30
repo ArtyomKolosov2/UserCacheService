@@ -12,7 +12,7 @@ namespace UserCacheService.ConsoleApplication;
 
 public static class Program
 {
-    private static Url _baseUrl = new("http://localhost:5000");
+    private static string _baseUrl = "http://localhost:5000";
     
     private const string User = "test";
     
@@ -112,7 +112,7 @@ public static class Program
         var url = Console.ReadLine();
         if (Url.IsValid(url))
         {
-            _baseUrl = Url.Parse(url);
+            _baseUrl = Url.Parse(url).ToString();
             Console.WriteLine($"New url: {_baseUrl}");
         }
         else
@@ -149,6 +149,7 @@ public static class Program
         }
         catch (FlurlHttpException ex)
         {
+            Console.WriteLine(ex);
             await PrintErrorResponse(ex);
         }
     }
