@@ -111,7 +111,10 @@ public static class Program
         Console.WriteLine("Enter new base url:");
         var url = Console.ReadLine();
         if (Url.IsValid(url))
+        {
             _baseUrl = Url.Parse(url);
+            Console.WriteLine($"New url: {_baseUrl}");
+        }
         else
             Console.WriteLine("Provider URL is invalid");
     }
