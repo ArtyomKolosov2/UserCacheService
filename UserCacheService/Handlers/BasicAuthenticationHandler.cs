@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using UserCacheService.Infrastructure.Authentication;
 
@@ -30,6 +31,10 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        var endpoint = Context.GetEndpoint();
+        if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
+            return AuthenticateResult.NoResult();
+        
         var authorizationHeader = Request.Headers[Authorization].ToString();
         if (authorizationHeader == null || !authorizationHeader.StartsWith(Basic, StringComparison.OrdinalIgnoreCase)) 
             return await Failure(MissingAuthorizationHeader);

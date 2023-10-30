@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentAssertions" Version="6.12.0" />
       <PackageReference Include="Flurl.Http" Version="3.2.4" />
       <PackageReference Include="Flurl.Http.Xml" Version="2.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.24" />

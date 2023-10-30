@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Xml;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
@@ -37,9 +38,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHostedService<UserInfoCacheBackgroundUpdateService>();
 
 builder.Services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(BasicAuthenticationDefaults.AuthenticationScheme, null);
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(BasicAuthenticationDefaults.AuthenticationScheme, options => {  });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(BasicAuthenticationDefaults.AuthenticationScheme)
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 var app = builder.Build();
 
@@ -50,7 +56,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers()
+    .RequireAuthorization();
+
 app.UseMiddleware<UnhandledExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment()) await PrepareDatabase(app);

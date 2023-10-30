@@ -3,12 +3,10 @@ using System.Xml.Serialization;
 using FluentAssertions;
 using Flurl.Http;
 using Flurl.Http.Xml;
-using Microsoft.EntityFrameworkCore;
 using Tests.EnvironmentBuilder.Integration;
 using UserCacheService.Domain.Error;
 using UserCacheService.Domain.UserInfo;
 using UserCacheService.Dtos;
-using UserCacheService.Infrastructure.Database.Context;
 using Xunit;
 
 namespace UserCacheService.Tests;
@@ -16,9 +14,6 @@ namespace UserCacheService.Tests;
 [Collection(nameof(IntegrationTestsCollection))]
 public class AuthControllerTests : IntegrationTestsBase, IAsyncLifetime
 {
-    private const string XmlContent = "application/xml";
-    private const string JsonContent = "application/json";
-    
     private const string CreateUserUrl = "Auth/CreateUser";
     private const string RemoveUserUrl = "Auth/RemoveUser";
     private const string SetStatusUrl = "Auth/SetStatus";
@@ -186,12 +181,64 @@ public class AuthControllerTests : IntegrationTestsBase, IAsyncLifetime
         userInfoFromDatabase!.Status.Should().Be(newStatus);
     }
     
+    [Fact]
+    public async Task SetStatus_UserDoesntExists_ResponseReturned()
+    {
+        // Arrange
+        var testCredentials = GetTestCredentials();
+        const UserInfoStatus newStatus = UserInfoStatus.Active;
+        const string id = "1";
+        
+        // Act
+        var response = await SetStatusUrl.WithBasicAuth(testCredentials.username, testCredentials.password)
+            .AllowHttpStatus(HttpStatusCode.NotFound)
+            .PostUrlEncodedAsync(new Dictionary<string, string>
+            {
+                { "id", id },
+                { "newStatus", newStatus.ToString() }
+            });
+        
+        // Assert
+        ValidateResponseContentType(response, JsonContent);
+        response.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        var responseDto = await response.GetJsonAsync<ErrorResponseDto>();
+        responseDto.Should().NotBeNull();
+        responseDto.Success.Should().BeFalse();
+        responseDto.ErrorId.Should().Be((int)ErrorCode.UserNotFound);
+        responseDto.ErrorMessage.Should().Be($"Couldn't find user info with id {id}");
+    }
+    
+    [Fact]
+    public async Task SetStatus_UserExistsAndNewStatusHasWrongValue_ResponseReturned()
+    {
+        // Arrange
+        var testCredentials = GetTestCredentials();
+        
+        await InsertUserInfoToDb(1, "Test", UserInfoStatus.New);
+        
+        const string invalidStatus = "InvalidStatus";
+        const string id = "1";
+        
+        // Act
+        var response = await SetStatusUrl.WithBasicAuth(testCredentials.username, testCredentials.password)
+            .AllowHttpStatus(HttpStatusCode.UnprocessableEntity)
+            .PostUrlEncodedAsync(new Dictionary<string, string>
+            {
+                { "id", id },
+                { "newStatus", invalidStatus }
+            });
+        
+        // Assert
+        ValidateResponseContentType(response, JsonContent);
+        response.StatusCode.Should().Be((int)HttpStatusCode.UnprocessableEntity);
+        var responseDto = await response.GetJsonAsync<ErrorResponseDto>();
+        responseDto.Should().NotBeNull();
+        responseDto.Success.Should().BeFalse();
+        responseDto.ErrorId.Should().Be((int)ErrorCode.InvalidUserInfoStatus);
+        responseDto.ErrorMessage.Should().Be($"User info status value {invalidStatus} can't be used");
+    }
+    
     public Task InitializeAsync() => Fixture.InitializeAsync();
 
     public Task DisposeAsync() => ((IAsyncLifetime)Fixture).DisposeAsync();
-    
-    private static void ValidateResponseContentType(IFlurlResponse response, string type)
-    {
-        response.Headers.Should().ContainSingle(x => x.Name.Contains("content-type", StringComparison.OrdinalIgnoreCase) && x.Value.Contains(type));
-    }
 }

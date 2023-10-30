@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentAssertions;
+using Flurl.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using UserCacheService.Domain.UserInfo;
 using UserCacheService.Infrastructure.Authentication;
@@ -8,6 +10,9 @@ namespace Tests.EnvironmentBuilder.Integration;
 
 public class IntegrationTestsBase : IClassFixture<IntegrationTestFixture>
 {
+    protected const string XmlContent = "application/xml";
+    protected const string JsonContent = "application/json";
+    
     protected IntegrationTestFixture Fixture { get; }
     
     protected IntegrationTestsBase(IntegrationTestFixture fixture)
@@ -38,5 +43,10 @@ public class IntegrationTestsBase : IClassFixture<IntegrationTestFixture>
         await Fixture.DatabaseContext.SaveChangesAsync();
 
         return userInfo;
+    }
+    
+    protected static void ValidateResponseContentType(IFlurlResponse response, string type)
+    {
+        response.Headers.Should().ContainSingle(x => x.Name.Contains("content-type", StringComparison.OrdinalIgnoreCase) && x.Value.Contains(type));
     }
 }
