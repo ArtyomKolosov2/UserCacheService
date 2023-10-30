@@ -2,5 +2,5 @@
 
 public class RemoveUserRequestDto
 {
-    public RemoveUserDto RemoveUser { get; set; }
+    public RemoveUserDto? RemoveUser { get; set; }
 }

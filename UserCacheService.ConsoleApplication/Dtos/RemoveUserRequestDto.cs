@@ -1,4 +1,4 @@
-﻿namespace UserCacheService.Console.Dtos;
+﻿namespace UserCacheService.ConsoleApplication.Dtos;
 
 public class RemoveUserRequestDto
 {

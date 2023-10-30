@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1B61B3AA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCacheService.Tests", "Tests\UserCacheService.Tests\UserCacheService.Tests.csproj", "{8B127F0B-64CF-4666-BF93-EF25BA471957}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCacheService.Console", "UserCacheService.Console\UserCacheService.Console.csproj", "{4DF7AAC1-E410-4A83-8000-CF93F50F2417}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCacheService.ConsoleApplication", "UserCacheService.ConsoleApplication\UserCacheService.ConsoleApplication.csproj", "{4DF7AAC1-E410-4A83-8000-CF93F50F2417}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.EnvironmentBuilder", "Tests\Tests.EnvironmentBuilder\Tests.EnvironmentBuilder.csproj", "{692495FF-4284-4E5F-96D4-6EFE186AC453}"
 EndProject

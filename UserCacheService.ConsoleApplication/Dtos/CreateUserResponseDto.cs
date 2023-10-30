@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace UserCacheService.Console.Dtos;
+namespace UserCacheService.ConsoleApplication.Dtos;
 
 [XmlRoot("Response")]
 public class CreateUserResponseDto : BaseResponseDto

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace UserCacheService.Console.Dtos;
+namespace UserCacheService.ConsoleApplication.Dtos;
 
 public class RemoveUserResponseDto : BaseResponseDto
 {

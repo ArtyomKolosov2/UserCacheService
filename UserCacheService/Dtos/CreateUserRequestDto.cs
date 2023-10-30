@@ -6,5 +6,5 @@ namespace UserCacheService.Dtos;
 public class CreateUserRequestDto
 {
     [XmlElement("user")]
-    public UserInfoDto User { get; set; }
+    public UserInfoDto? User { get; set; }
 }

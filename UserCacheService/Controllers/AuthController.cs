@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using UserCacheService.Application.UserInfo.Create;
 using UserCacheService.Application.UserInfo.Remove;
 using UserCacheService.Application.UserInfo.Set;
+using UserCacheService.Domain.Error;
 using UserCacheService.Domain.UserInfo;
 using UserCacheService.Dtos;
 
@@ -27,7 +28,16 @@ public class AuthController : ControllerBase
     [Produces("application/xml")]
     public async Task<ActionResult<CreateUserResponseDto>> CreateUser([FromBody] CreateUserRequestDto createUserRequestDto, CancellationToken cancellationToken)
     {
-        var userInfoCreationResult = await _mediator.Send(new CreateUserCommand(createUserRequestDto.User.Adapt<UserInfo>()), cancellationToken);
+        if (createUserRequestDto.User is null)
+            return BadRequestWithErrorResponseDto();
+        
+        var userInfoCreationResult = await _mediator.Send(new CreateUserCommand(new UserInfo
+        {
+            Id = createUserRequestDto.User.Id,
+            Name = createUserRequestDto.User.Name,
+            Status = UserInfoStatusHelper.TryParseNewStatusOrThrow(createUserRequestDto.User.Status)
+        }), cancellationToken);
+        
         return Ok(new CreateUserResponseDto
         {
             Success = true,
@@ -49,12 +59,26 @@ public class AuthController : ControllerBase
     [Produces("application/json")]
     public async Task<ActionResult<RemoveUserResponseDto>> RemoveUser([FromBody] RemoveUserRequestDto removeUserRequestDto, CancellationToken cancellationToken)
     {
+        if (removeUserRequestDto.RemoveUser is null)
+            return BadRequestWithErrorResponseDto();
+        
         var userInfo = await _mediator.Send(new RemoveUserCommand(removeUserRequestDto.RemoveUser.Id), cancellationToken);
         return Ok(new RemoveUserResponseDto
         {
             User = userInfo.Adapt<UserInfoDto>(),
             Success = true,
             Message = "User was removed"
+        });
+    }
+
+    [NonAction]
+    private BadRequestObjectResult BadRequestWithErrorResponseDto()
+    {
+        return BadRequest(new ErrorResponseDto
+        {
+            ErrorId = (int)ErrorCode.BadRequest,
+            ErrorMessage = "Provided dto is invalid",
+            Success = false,
         });
     }
 }
