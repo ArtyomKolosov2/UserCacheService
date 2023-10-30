@@ -12,11 +12,11 @@ namespace UserCacheService.ConsoleApplication;
 
 public static class Program
 {
+    private static Url _baseUrl = new("http://localhost:5000");
+    
     private const string User = "test";
     
     private const string Password = "test";
-    
-    private const string BaseUrl = "http://localhost:5000";
     
     private const string CreateUserUrl = "Auth/CreateUser";
     
@@ -29,7 +29,7 @@ public static class Program
     public static async Task Main(string[] args)
     {
         ConfigureFlurl();
-        
+        Console.WriteLine($"Default url: {_baseUrl}");
         Console.WriteLine("Choose a command from the menu:");
 
         var isRunning = true;
@@ -52,6 +52,9 @@ public static class Program
                 case "4":
                     await GetUser();
                     break;
+                case "5":
+                    ReplaceBaseUrl();
+                    break;
                 case "0":
                     isRunning = false;
                     break;
@@ -68,10 +71,11 @@ public static class Program
         Console.WriteLine("2 - Remove user");
         Console.WriteLine("3 - Set status");
         Console.WriteLine("4 - Get user info");
+        Console.WriteLine("5 - Replace base api URL");
         Console.WriteLine("0 - Exit");
     }
 
-    private static Task RemoveUser() => BaseUrl.AppendPathSegment(RemoveUserUrl).WithBasicAuth(User, Password).PostJsonAsync(new RemoveUserRequestDto
+    private static Task RemoveUser() => _baseUrl.AppendPathSegment(RemoveUserUrl).WithBasicAuth(User, Password).PostJsonAsync(new RemoveUserRequestDto
     {
         RemoveUser = new RemoveUserDto
         {
@@ -79,14 +83,14 @@ public static class Program
         }
     }).PrintResponse();
 
-    private static Task SetStatus() => BaseUrl.AppendPathSegment(SetStatusUrl).WithBasicAuth(User, Password).PostUrlEncodedAsync(new Dictionary<string, string>
+    private static Task SetStatus() => _baseUrl.AppendPathSegment(SetStatusUrl).WithBasicAuth(User, Password).PostUrlEncodedAsync(new Dictionary<string, string>
     {
         { "id", ParseIntFromConsole("Input user id:").ToString() },
         { "newStatus", GetInputFromConsole("Input new status:") }
     }).PrintResponse();
 
     private static Task CreateUser() =>
-        BaseUrl.AppendPathSegment(CreateUserUrl).WithBasicAuth(User, Password).PostXmlAsync(new CreateUserRequestDto
+        _baseUrl.AppendPathSegment(CreateUserUrl).WithBasicAuth(User, Password).PostXmlAsync(new CreateUserRequestDto
         {
             User = new UserInfoDto
             {
@@ -97,11 +101,21 @@ public static class Program
         }).PrintResponse();
 
     private static Task GetUser() =>
-        BaseUrl.AppendPathSegment(GetUserInfoUrl)
+        _baseUrl.AppendPathSegment(GetUserInfoUrl)
             .SetQueryParam("id", ParseIntFromConsole("Input user id:").ToString())
             .GetAsync()
             .PrintResponse();
 
+    private static void ReplaceBaseUrl()
+    {
+        Console.WriteLine("Enter new base url:");
+        var url = Console.ReadLine();
+        if (Url.IsValid(url))
+            _baseUrl = Url.Parse(url);
+        else
+            Console.WriteLine("Provider URL is invalid");
+    }
+    
     private static void ConfigureFlurl()
     {
         FlurlHttp.Configure(settings =>
@@ -153,9 +167,7 @@ public static class Program
         Console.WriteLine(message);
         int value;
         while (!int.TryParse(Console.ReadLine(), out value))
-        {
             Console.WriteLine("Wrong input. Try again.");
-        }
 
         return value;
     }
