@@ -14,9 +14,9 @@ public static class Program
 {
     private static string _baseUrl = "http://localhost:5000";
     
-    private const string User = "test";
+    private static string _user = "test";
     
-    private const string Password = "test";
+    private static string _password = "test";
     
     private const string CreateUserUrl = "Auth/CreateUser";
     
@@ -55,6 +55,9 @@ public static class Program
                 case "5":
                     ReplaceBaseUrl();
                     break;
+                case "6":
+                    ReplaceBasicCredentials();
+                    break;
                 case "0":
                     isRunning = false;
                     break;
@@ -63,6 +66,12 @@ public static class Program
                     break;
             }
         }
+    }
+
+    private static void ReplaceBasicCredentials()
+    {
+        _user = GetInputFromConsole("Enter user:");
+        _password = GetInputFromConsole("Enter password:");
     }
 
     private static void OutputMenuOptions()
@@ -75,7 +84,7 @@ public static class Program
         Console.WriteLine("0 - Exit");
     }
 
-    private static Task RemoveUser() => _baseUrl.AppendPathSegment(RemoveUserUrl).WithBasicAuth(User, Password).PostJsonAsync(new RemoveUserRequestDto
+    private static Task RemoveUser() => _baseUrl.AppendPathSegment(RemoveUserUrl).WithBasicAuth(_user, _password).PostJsonAsync(new RemoveUserRequestDto
     {
         RemoveUser = new RemoveUserDto
         {
@@ -83,14 +92,14 @@ public static class Program
         }
     }).PrintResponse();
 
-    private static Task SetStatus() => _baseUrl.AppendPathSegment(SetStatusUrl).WithBasicAuth(User, Password).PostUrlEncodedAsync(new Dictionary<string, string>
+    private static Task SetStatus() => _baseUrl.AppendPathSegment(SetStatusUrl).WithBasicAuth(_user, _password).PostUrlEncodedAsync(new Dictionary<string, string>
     {
         { "id", ParseIntFromConsole("Input user id:").ToString() },
         { "newStatus", GetInputFromConsole("Input new status:") }
     }).PrintResponse();
 
     private static Task CreateUser() =>
-        _baseUrl.AppendPathSegment(CreateUserUrl).WithBasicAuth(User, Password).PostXmlAsync(new CreateUserRequestDto
+        _baseUrl.AppendPathSegment(CreateUserUrl).WithBasicAuth(_user, _password).PostXmlAsync(new CreateUserRequestDto
         {
             User = new UserInfoDto
             {
