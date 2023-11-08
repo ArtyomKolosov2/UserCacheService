@@ -8,6 +8,9 @@ using UserCacheService.Dtos;
 
 namespace UserCacheService.Middlewares;
 
+/// <summary>
+/// Middleware which is responsible to transform all unhandled exceptions to the error response dto
+/// </summary>
 public class UnhandledExceptionMiddleware
 {
     private readonly RequestDelegate _next;
@@ -43,6 +46,8 @@ public class UnhandledExceptionMiddleware
     {
         if (httpContext.Response.ContentType is "application/xml")
         {
+            // By default ASP.NET returns xml with UTF-8 encoding.
+            // We need to be consistent and align encoding in custom middleware
             await using var stream = new MemoryStream();
             await using var writer = new XmlTextWriter(stream, Encoding.UTF8);
             var serializer = new XmlSerializer(errorResponseDto.GetType());

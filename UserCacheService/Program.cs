@@ -1,10 +1,6 @@
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Xml;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using UserCacheService.Application;
 using UserCacheService.Application.UserInfo.Cache.Background;
@@ -18,7 +14,6 @@ using UserCacheService.Middlewares;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers(options =>
     {

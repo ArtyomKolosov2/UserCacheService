@@ -20,6 +20,7 @@ public class UserInfoCacheBackgroundUpdateService : BackgroundService
         using var timer = new PeriodicTimer(_period);
         using var scope = _serviceScopeFactory.CreateScope();
         
+        // Waits 10m or until application is shutdown
         while (!cancellationToken.IsCancellationRequested && await timer.WaitForNextTickAsync(cancellationToken))
         {
             var userInfoCache = scope.ServiceProvider.GetRequiredService<IUserInfoCache>();

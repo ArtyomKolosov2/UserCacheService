@@ -28,6 +28,7 @@ public class AuthController : ControllerBase
     [Produces("application/xml")]
     public async Task<ActionResult<CreateUserResponseDto>> CreateUser([FromBody] CreateUserRequestDto createUserRequestDto, CancellationToken cancellationToken)
     {
+        // This can be done via attributes, but since domain is relatively simple we can handle it manually
         if (createUserRequestDto.User is null)
             return BadRequestWithErrorResponseDto();
         

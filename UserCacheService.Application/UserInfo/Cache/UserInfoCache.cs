@@ -6,6 +6,11 @@ using UserCacheService.Domain.UserInfo.Repository;
 
 namespace UserCacheService.Application.UserInfo.Cache;
 
+/// <summary>
+/// User info cache with thread safe implementation
+/// It uses ConcurrentDictionary to store data in memory
+/// It has no functionality to invalidate cache on external entry update since we assume that automatic update should be enough
+/// </summary>
 public class UserInfoCache : IUserInfoCache
 {
     private readonly SemaphoreSlim _semaphoreSlim = new (1);

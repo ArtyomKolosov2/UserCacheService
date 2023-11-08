@@ -30,6 +30,8 @@ public static class Program
     {
         ConfigureFlurl();
         Console.WriteLine($"Default url: {_baseUrl}");
+        Console.WriteLine($"Default user: {_user}");
+        Console.WriteLine($"Default password: {_password}");
         Console.WriteLine("Choose a command from the menu:");
 
         var isRunning = true;

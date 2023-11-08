@@ -12,6 +12,7 @@ public class UserInfo
         Name = name;
     }
     
+    // There is no enforced rule to make Id always positive int since there is no such requirement.
     public int Id { get; set; }
     
     public string Name { get; set; }

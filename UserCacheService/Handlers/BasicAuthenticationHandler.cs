@@ -30,6 +30,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        // Otherwise allow anonymous attribute will not work since by default it's used only for authorization in ASP.NET core
         var endpoint = Context.GetEndpoint();
         if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
             return AuthenticateResult.NoResult();
@@ -40,13 +41,11 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
         try
         {
-            var token = authorizationHeader.Substring($"{Basic} ".Length).Trim();
-            var credentialsFromDecodedString = Encoding.UTF8.GetString(Convert.FromBase64String(token));
-            var credentials = credentialsFromDecodedString.Split(':');
-            if (!await _credentialsChecker.CheckCredentials(new BasicAuthenticationCredentials(credentials[0], credentials[1])))
+            var credentials = GetBasicAuthCredentials(authorizationHeader);
+            if (!await _credentialsChecker.CheckCredentials(credentials))
                 return await Failure(InvalidLoginOrPassword);
             
-            var claims = new[] { new Claim(ClaimType, credentials[0]) };
+            var claims = new[] { new Claim(ClaimType, credentials.Username) };
             var identity = new ClaimsIdentity(claims, Basic);
             var claimsPrincipal = new ClaimsPrincipal(identity);
         
@@ -56,6 +55,14 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         {
             return await Failure(InvalidAuthorizationHeader);
         }
+    }
+
+    private static BasicAuthenticationCredentials GetBasicAuthCredentials(string authorizationHeader)
+    {
+        var token = authorizationHeader.Substring($"{Basic} ".Length).Trim();
+        var credentialsFromDecodedString = Encoding.UTF8.GetString(Convert.FromBase64String(token));
+        var credentials = credentialsFromDecodedString.Split(':');
+        return new BasicAuthenticationCredentials(credentials[0], credentials[1]);
     }
 
     private Task<AuthenticateResult> Failure(string message)
