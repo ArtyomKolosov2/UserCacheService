@@ -66,3 +66,37 @@ Web
 Console
 - Go to folder with the results of the build of UserCacheService.ConsoleApplication `{SolutionRoot}\UserCacheService.ConsoleApplication\bin\Debug\net6.0`
 - Use `dotnet UserCacheService.ConsoleApplication.dll` or find and open `UserCacheService.ConsoleApplication.exe`
+
+### List of endpoints
+**Auth controller**
+1. `Auth/CreateUser`
+  - Consumes: Xml
+  - Produces: Xml 
+2. `Auth/RemoveUser`
+  - Consumes: Json
+  - Produces: Json 
+3. `Auth/SetStatus`
+  - Consumes: X-www-form-urlencoded
+  - Produces: Json
+
+**Public controller**
+1. `Public/UserInfo?id=0`
+  - Produces: HTML
+
+### Request examples
+```xml
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Request xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <user Id="9" Name="Test">
+        <Status>New</Status>
+    </user>
+</Request>
+```
+
+```json
+{
+  "RemoveUser": {
+    "Id" : 1
+  }
+}
+```
